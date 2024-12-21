@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import * as yup from 'yup';
 
@@ -14,27 +14,16 @@ const bodyValidation: yup.Schema<ICidade> = yup.object().shape({
     estado: yup.string().required().min(3),
 });
 
-// Função de criação
-export const create = async (req: Request, res: Response) => {
-    let validateData : ICidade | undefined = undefined;
+export const createBodyValidator: RequestHandler = async (req, res, next) => {
     try {
-        
-        validateData = await bodyValidation.validate(req.body, { abortEarly: false });
-
-        console.log(validateData);
-
-        res.status(StatusCodes.CREATED).json({
-            message: 'Cidade criada com sucesso!',
-            data: validateData,
-        });
-
-        return; 
+        await bodyValidation.validate(req.body, { abortEarly: false });
+        return next();
     } catch (err) {
         const yupError = err as yup.ValidationError;
-        const errors : Record<string,string> = {};
+        const errors: Record<string, string> = {};
 
         yupError.inner.forEach(error => {
-            if(!error.path) return;
+            if (!error.path) return;
             errors[error.path] = error.message;
         })
 
@@ -42,6 +31,19 @@ export const create = async (req: Request, res: Response) => {
             errors: errors
         });
 
-        return; 
+        return;
     }
+}
+
+// Função de criação
+export const create = async (req: Request, res: Response) => {
+
+    console.log(req.body);
+
+        res.status(StatusCodes.CREATED).json({
+            message: 'Cidade criada com sucesso!',
+            data: req.body,
+        });
+
 };
+
