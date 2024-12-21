@@ -12,5 +12,6 @@ router.get('/', (req, res) => {
 router.post('/cidades', CidadesController.createValidation, CidadesController.create,);
 router.get('/cidades', CidadesController.getAllValidation, CidadesController.getAll,);
 router.get('/cidades/:id', CidadesController.getByIdValidation, CidadesController.getById,);
+router.put('/cidades/:id', CidadesController.updateByIdValidation, CidadesController.updateById,);
 
 export { router };
